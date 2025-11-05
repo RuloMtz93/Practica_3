@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity"
-    android:background="?android:colorBackground">
+    android:background="?attr/colorSurface">
 
     <!-- 📁 Contenedor del fragmento -->
     <FrameLayout
@@ -15,7 +15,7 @@
 
     <!-- 🎨 Botón para cambiar de tema -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/btnSwitchTheme"
+        android:id="@+id/btnTheme"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"

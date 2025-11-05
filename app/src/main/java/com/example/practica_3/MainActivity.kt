@@ -19,21 +19,23 @@ class MainActivity : AppCompatActivity() {
     private val STORAGE_PERMISSION_CODE = 1001
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        // 🧩 Aplicar el tema guardado antes de inflar las vistas
+        // 🔹 Leer el color guardado desde SharedPreferences
         val prefs = getSharedPreferences("settings", MODE_PRIVATE)
-        val theme = prefs.getString("theme", "guinda")
-        if (theme == "azul") {
-            setTheme(R.style.Theme_Practica3_Azul)
-        } else {
-            setTheme(R.style.Theme_Practica3_Guinda)
+        val colorElegido = prefs.getString("color_tema", "guinda") // usa "color_tema"
+
+        // 🔹 Aplicar el tema correspondiente antes de cargar la vista
+        when (colorElegido) {
+            "azul" -> setTheme(R.style.Theme_Practica3_Azul)
+            else -> setTheme(R.style.Theme_Practica3_Guinda)
         }
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // 🎨 Botón flotante de cambio de tema
-        val btnTheme = findViewById<FloatingActionButton>(R.id.btnSwitchTheme)
-        configurarBotonTema(btnTheme, theme)
+        // 🎨 Botón flotante para cambiar tema
+        val btnTheme = findViewById<FloatingActionButton>(R.id.btnTheme)
+
+        configurarBotonTema(btnTheme, colorElegido)
 
         btnTheme.setOnClickListener {
             val opciones = arrayOf("Tema Guinda (IPN)", "Tema Azul (ESCOM)")
@@ -41,14 +43,15 @@ class MainActivity : AppCompatActivity() {
                 .setTitle("Selecciona un tema")
                 .setItems(opciones) { _, which ->
                     val nuevoTema = if (which == 0) "guinda" else "azul"
-                    prefs.edit().putString("theme", nuevoTema).apply()
+                    prefs.edit().putString("color_tema", nuevoTema).apply() // clave corregida
+
                     Toast.makeText(
                         this,
                         "Tema cambiado a ${opciones[which]}",
                         Toast.LENGTH_SHORT
                     ).show()
 
-                    // 🔄 Evita recrear inmediatamente (causa crash)
+                    // 🔄 Recargar activity con el nuevo tema
                     btnTheme.postDelayed({
                         recreate()
                     }, 300)
@@ -56,8 +59,7 @@ class MainActivity : AppCompatActivity() {
                 .show()
         }
 
-
-        // 🔐 Verificación de permisos antes de iniciar explorador
+    // 🔐 Verificación de permisos antes de iniciar explorador
         checkStoragePermissions()
     }
 

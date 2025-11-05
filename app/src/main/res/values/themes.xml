@@ -2,26 +2,29 @@
 
     <!-- 🎨 Tema Guinda IPN -->
     <style name="Theme.Practica3_Guinda" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="colorPrimary">#6B2E5F</item>
-        <item name="colorOnPrimary">#FFFFFF</item>
-        <item name="colorSecondary">#A84F8E</item>
-        <item name="colorOnSecondary">#FFFFFF</item>
-        <item name="colorSurface">#F5F5F5</item>
-        <item name="colorOnSurface">#000000</item>
+        <item name="colorPrimary">@color/guinda_ipn</item>
+        <item name="colorOnPrimary">@color/colorOnPrimary</item>
+        <item name="colorPrimaryContainer">@color/guinda_secondary</item>
+        <item name="colorOnPrimaryContainer">@color/colorOnPrimary</item>
+        <item name="colorSecondary">@color/guinda_secondary</item>
+        <item name="colorOnSecondary">@color/colorOnSecondary</item>
+        <item name="colorSurface">@color/colorSurface</item>
+        <item name="colorOnSurface">@color/colorOnSurface</item>
         <item name="android:statusBarColor">?attr/colorPrimary</item>
         <item name="android:navigationBarColor">?attr/colorPrimary</item>
     </style>
 
     <!-- 🎨 Tema Azul ESCOM -->
     <style name="Theme.Practica3_Azul" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="colorPrimary">#003D6D</item>
-        <item name="colorOnPrimary">#FFFFFF</item>
-        <item name="colorSecondary">#1565C0</item>
-        <item name="colorOnSecondary">#FFFFFF</item>
-        <item name="colorSurface">#F5F5F5</item>
-        <item name="colorOnSurface">#000000</item>
+        <item name="colorPrimary">@color/azul_escom</item>
+        <item name="colorOnPrimary">@color/colorOnPrimary</item>
+        <item name="colorSecondary">@color/azul_secondary</item>
+        <item name="colorOnSecondary">@color/colorOnSecondary</item>
+        <item name="colorSurface">@color/colorSurface</item>
+        <item name="colorOnSurface">@color/colorOnSurface</item>
         <item name="android:statusBarColor">?attr/colorPrimary</item>
         <item name="android:navigationBarColor">?attr/colorPrimary</item>
     </style>
+
 
 </resources>

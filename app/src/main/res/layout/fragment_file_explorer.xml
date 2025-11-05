@@ -6,7 +6,8 @@
     android:padding="8dp"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".FileExplorerFragment">
+    tools:context=".FileExplorerFragment"
+    android:background="?attr/colorSurface">
 
     <!-- Barra superior -->
     <LinearLayout
@@ -23,6 +24,7 @@
             android:src="@drawable/ic_arrow_back"
             android:contentDescription="Volver"
             android:padding="4dp"
+            android:tint="?attr/colorOnSurface"
             android:background="?attr/selectableItemBackgroundBorderless" />
 
         <TextView
@@ -33,6 +35,7 @@
             android:text="Ruta actual"
             android:textSize="14sp"
             android:paddingStart="8dp"
+            android:textColor="?attr/colorOnSurface"
             android:ellipsize="middle"
             android:singleLine="true" />
 
@@ -43,9 +46,8 @@
             android:text="Cambiar a Interno"
             android:layout_margin="8dp"
             android:backgroundTint="?attr/colorPrimary"
-            android:textColor="@android:color/white"
+            app:tint="@android:color/white"
             app:cornerRadius="16dp" />
-
     </LinearLayout>
 
     <!-- ====== LISTA DE ARCHIVOS + DOCK FLOTANTE ====== -->
@@ -54,14 +56,14 @@
         android:layout_height="0dp"
         android:layout_weight="1">
 
-        <!-- Lista de archivos (único RecyclerView) -->
+        <!-- Lista de archivos -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerFiles"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scrollbars="vertical" />
 
-        <!-- Dock flotante de acciones -->
+        <!-- Dock flotante -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/fabDockContainer"
             android:layout_width="wrap_content"
@@ -71,7 +73,7 @@
             android:layout_marginBottom="20dp"
             app:cardCornerRadius="40dp"
             app:cardElevation="8dp"
-            app:cardBackgroundColor="@color/white"
+            app:cardBackgroundColor="?attr/colorPrimary"
             android:padding="12dp">
 
             <LinearLayout
@@ -91,7 +93,6 @@
                     app:tint="@android:color/white"
                     android:visibility="gone" />
 
-                <!-- FAB más opciones (⋮) -->
                 <com.google.android.material.floatingactionbutton.FloatingActionButton
                     android:id="@+id/fabMoreOptions"
                     android:layout_width="56dp"
@@ -101,7 +102,6 @@
                     android:contentDescription="Más opciones"
                     app:tint="@android:color/white" />
 
-                <!-- FAB crear (+) -->
                 <com.google.android.material.floatingactionbutton.FloatingActionButton
                     android:id="@+id/fabMenu"
                     android:layout_width="56dp"
@@ -112,6 +112,4 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
     </FrameLayout>
-
-
 </LinearLayout>

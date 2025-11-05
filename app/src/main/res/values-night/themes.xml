@@ -1,11 +1,28 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <style name="Theme.Practica_3" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="colorPrimary">#003D6D</item> <!-- Azul ESCOM -->
-        <item name="colorSecondary">#6B2E5F</item> <!-- Guinda IPN -->
+    <!-- 🎨 Tema Guinda IPN -->
+    <style name="Theme.Practica3_Guinda" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/guinda_ipn</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorSecondary">@color/guinda_secondary</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <item name="colorSurface">@color/colorSurface</item>
+        <item name="colorOnSurface">@color/colorOnSurface</item>
         <item name="android:statusBarColor">?attr/colorPrimary</item>
         <item name="android:navigationBarColor">?attr/colorPrimary</item>
-        <item name="android:windowBackground">?android:colorBackground</item>
     </style>
+
+    <!-- 🎨 Tema Azul ESCOM -->
+    <style name="Theme.Practica3_Azul" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/azul_escom</item>
+        <item name="colorOnPrimary">@color/colorOnPrimary</item>
+        <item name="colorSecondary">@color/azul_secondary</item>
+        <item name="colorOnSecondary">@color/colorOnSecondary</item>
+        <item name="colorSurface">@color/colorSurface</item>
+        <item name="colorOnSurface">@color/colorOnSurface</item>
+        <item name="android:statusBarColor">?attr/colorPrimary</item>
+        <item name="android:navigationBarColor">?attr/colorPrimary</item>
+    </style>
+
 
 </resources>

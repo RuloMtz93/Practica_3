@@ -1,0 +1,15 @@
+<resources>
+    <!-- Colores para modo oscuro -->
+
+    <!-- Fondo y superficie -->
+    <color name="colorSurface">#121212</color> <!-- fondo general -->
+    <color name="colorOnSurface">#FFFFFF</color> <!-- texto sobre fondo -->
+
+    <!-- Colores principales en oscuro -->
+    <color name="guinda_ipn">#4A0028</color>
+    <color name="azul_escom">#0D47A1</color>
+
+    <!-- Texto sobre primary/secondary -->
+    <color name="colorOnPrimary">#FFFFFF</color>
+    <color name="colorOnSecondary">#FFFFFF</color>
+</resources>

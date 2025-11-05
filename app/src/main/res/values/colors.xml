@@ -36,5 +36,10 @@
     <color name="guinda_ipn_oscuro">#4A0028</color>
     <color name="gray_800">#2E2E2E</color>
 
+    <color name="colorSurface">#FFFFFF</color>
+    <color name="colorOnSurface">#000000</color>
+
+    <color name="colorOnPrimary">#FFFFFF</color>
+    <color name="colorOnSecondary">#FFFFFF</color>
 
 </resources>

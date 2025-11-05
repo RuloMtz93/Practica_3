@@ -4,10 +4,11 @@
     android:layout_height="wrap_content"
     android:layout_margin="6dp"
     android:elevation="3dp"
-    android:foreground="?android:attr/selectableItemBackground"
+    android:foreground="?attr/selectableItemBackground"
     android:clickable="true"
     android:focusable="true"
-    android:padding="8dp">
+    android:padding="8dp"
+    android:background="?attr/colorSurface">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -21,7 +22,8 @@
             android:layout_height="48dp"
             android:contentDescription="Icono de archivo"
             android:padding="6dp"
-            android:src="@drawable/ic_file" />
+            android:src="@drawable/ic_file"
+            android:tint="?attr/colorOnSurface" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -34,7 +36,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Archivo.txt"
-                android:textColor="@android:color/black"
+                android:textColor="?attr/colorOnSurface"
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
@@ -43,10 +45,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="120 KB"
-                android:textColor="@android:color/darker_gray"
+                android:textColor="?attr/colorOnSurface"
                 android:textSize="13sp" />
 
         </LinearLayout>
     </LinearLayout>
-
 </androidx.cardview.widget.CardView>
