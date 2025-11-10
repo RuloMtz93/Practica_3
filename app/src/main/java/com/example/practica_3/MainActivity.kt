@@ -10,6 +10,7 @@ import android.provider.Settings
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -19,11 +20,21 @@ class MainActivity : AppCompatActivity() {
     private val STORAGE_PERMISSION_CODE = 1001
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        // 🔹 Leer el color guardado desde SharedPreferences
+        // ==============================
+        // 1) Aplicar apariencia (claro/oscuro/sistema)
+        // ==============================
         val prefs = getSharedPreferences("settings", MODE_PRIVATE)
-        val colorElegido = prefs.getString("color_tema", "guinda") // usa "color_tema"
+        val apariencia = prefs.getString("apariencia", "sistema")
+        when (apariencia) {
+            "claro" -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            "oscuro" -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            else -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+        }
 
-        // 🔹 Aplicar el tema correspondiente antes de cargar la vista
+        // ==============================
+        // 2) Aplicar paleta (guinda/azul) ANTES de inflar vistas
+        // ==============================
+        val colorElegido = prefs.getString("color_tema", "guinda")
         when (colorElegido) {
             "azul" -> setTheme(R.style.Theme_Practica3_Azul)
             else -> setTheme(R.style.Theme_Practica3_Guinda)
@@ -32,59 +43,87 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // 🎨 Botón flotante para cambiar tema
+        // FABs
         val btnTheme = findViewById<FloatingActionButton>(R.id.btnTheme)
+        val btnMode = findViewById<FloatingActionButton>(R.id.btnMode)
 
+        // Configurar estilos de FABs con la MISMA paleta
         configurarBotonTema(btnTheme, colorElegido)
+        configurarBotonApariencia(btnMode, colorElegido) // 🔥 ahora usa la misma paleta
 
+        // Diálogo de paleta (Guinda/Azul)
         btnTheme.setOnClickListener {
             val opciones = arrayOf("Tema Guinda (IPN)", "Tema Azul (ESCOM)")
             AlertDialog.Builder(this)
-                .setTitle("Selecciona un tema")
+                .setTitle("Selecciona una paleta de color")
                 .setItems(opciones) { _, which ->
                     val nuevoTema = if (which == 0) "guinda" else "azul"
-                    prefs.edit().putString("color_tema", nuevoTema).apply() // clave corregida
-
-                    Toast.makeText(
-                        this,
-                        "Tema cambiado a ${opciones[which]}",
-                        Toast.LENGTH_SHORT
-                    ).show()
-
-                    // 🔄 Recargar activity con el nuevo tema
-                    btnTheme.postDelayed({
-                        recreate()
-                    }, 300)
-                }
-                .show()
+                    prefs.edit().putString("color_tema", nuevoTema).apply()
+                    Toast.makeText(this, "Color cambiado a ${opciones[which]}", Toast.LENGTH_SHORT).show()
+                    recreate()
+                }.show()
         }
 
-    // 🔐 Verificación de permisos antes de iniciar explorador
+        // Diálogo de apariencia (Claro/Oscuro/Sistema)
+        btnMode.setOnClickListener {
+            val opciones = arrayOf("Claro", "Oscuro", "Seguir sistema")
+            AlertDialog.Builder(this)
+                .setTitle("Selecciona apariencia")
+                .setItems(opciones) { _, which ->
+                    val nuevaApariencia = when (which) {
+                        0 -> "claro"
+                        1 -> "oscuro"
+                        else -> "sistema"
+                    }
+                    prefs.edit().putString("apariencia", nuevaApariencia).apply()
+
+                    when (nuevaApariencia) {
+                        "claro" -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+                        "oscuro" -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+                        else -> AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+                    }
+
+                    Toast.makeText(this, "Apariencia: ${opciones[which]}", Toast.LENGTH_SHORT).show()
+                    recreate()
+                }.show()
+        }
+
+        // Permisos
         checkStoragePermissions()
     }
 
-    // ===========================================================
-    // 🎨 Configurar color dinámico del FAB según el tema activo
-    // ===========================================================
-    private fun configurarBotonTema(btnTheme: FloatingActionButton, theme: String?) {
-        if (theme == "azul") {
-            // Tema ESCOM → fondo azul, ícono blanco
-            btnTheme.backgroundTintList =
-                ContextCompat.getColorStateList(this, R.color.azul_escom)
-            btnTheme.imageTintList =
-                ContextCompat.getColorStateList(this, android.R.color.white)
-        } else {
-            // Tema IPN → fondo guinda, ícono blanco
-            btnTheme.backgroundTintList =
-                ContextCompat.getColorStateList(this, R.color.guinda_ipn)
-            btnTheme.imageTintList =
-                ContextCompat.getColorStateList(this, android.R.color.white)
+    // ========= Helpers de color =========
+
+    /** Devuelve el color primario correcto según la paleta y si está en modo oscuro. */
+    private fun primaryColorRes(theme: String?): Int {
+        val isDark = (resources.configuration.uiMode and
+                android.content.res.Configuration.UI_MODE_NIGHT_MASK) ==
+                android.content.res.Configuration.UI_MODE_NIGHT_YES
+
+        return when {
+            theme == "azul" && isDark -> R.color.azul_escom_oscuro
+            theme == "azul" && !isDark -> R.color.azul_escom
+            theme == "guinda" && isDark -> R.color.guinda_ipn_oscuro
+            else -> R.color.guinda_ipn
         }
     }
 
-    // ===========================================================
-    // 🔐 Verificación y solicitud de permisos de almacenamiento
-    // ===========================================================
+    private fun configurarBotonTema(btnTheme: FloatingActionButton, theme: String?) {
+        btnTheme.backgroundTintList =
+            ContextCompat.getColorStateList(this, primaryColorRes(theme))
+        btnTheme.imageTintList =
+            ContextCompat.getColorStateList(this, android.R.color.white)
+    }
+
+    private fun configurarBotonApariencia(btnMode: FloatingActionButton, theme: String?) {
+        // 🔄 Mismo color que el FAB de paleta
+        btnMode.backgroundTintList =
+            ContextCompat.getColorStateList(this, primaryColorRes(theme))
+        btnMode.imageTintList =
+            ContextCompat.getColorStateList(this, android.R.color.white)
+    }
+
+    // ========= Permisos =========
     private fun checkStoragePermissions() {
         when {
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.R -> {
@@ -94,7 +133,6 @@ class MainActivity : AppCompatActivity() {
                     iniciarExplorador()
                 }
             }
-
             else -> {
                 val readGranted = ContextCompat.checkSelfPermission(
                     this, Manifest.permission.READ_EXTERNAL_STORAGE
@@ -119,13 +157,10 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // ⚙️ Mostrar diálogo para conceder MANAGE_EXTERNAL_STORAGE
     private fun showManageAllFilesDialog() {
         AlertDialog.Builder(this)
             .setTitle("Permiso de acceso total requerido")
-            .setMessage(
-                "Para que el explorador funcione correctamente, necesita permiso de acceso total a los archivos del dispositivo."
-            )
+            .setMessage("Para que el explorador funcione correctamente, necesita permiso de acceso total a los archivos del dispositivo.")
             .setPositiveButton("Conceder") { _, _ ->
                 try {
                     val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION)
@@ -146,9 +181,7 @@ class MainActivity : AppCompatActivity() {
             .show()
     }
 
-    // ===========================================================
-    // 🚀 Inicializar explorador
-    // ===========================================================
+    // ========= Navegación =========
     private fun iniciarExplorador() {
         if (supportFragmentManager.findFragmentById(R.id.fragment_container) == null) {
             supportFragmentManager.beginTransaction()
@@ -158,19 +191,12 @@ class MainActivity : AppCompatActivity() {
         Toast.makeText(this, "Explorador iniciado correctamente.", Toast.LENGTH_SHORT).show()
     }
 
-
-
-
-    // ===========================================================
-    // 📲 Resultado de permisos
-    // ===========================================================
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
         if (requestCode == STORAGE_PERMISSION_CODE) {
             val allGranted = grantResults.all { it == android.content.pm.PackageManager.PERMISSION_GRANTED }
             if (allGranted) {
@@ -185,9 +211,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // ===========================================================
-    // 🔄 Reanudar actividad (por si el usuario dio permiso manualmente)
-    // ===========================================================
     override fun onResume() {
         super.onResume()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {

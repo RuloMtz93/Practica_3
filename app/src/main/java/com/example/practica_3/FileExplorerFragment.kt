@@ -77,29 +77,36 @@ class FileExplorerFragment : Fragment() {
         )
         recycler.adapter = adapter
 
-        // 📁 Directorio inicial
-        currentPath = getSafeRootDirectory()
+        // 📁 Directorio inicial (ahora intenta la raíz real si hay permiso All Files)
+        currentPath = getRootDirectory()
         loadFiles(currentPath)
 
-        // 🎨 Colores según tema
+        // 🎨 Colores según tema (guinda/azul) + apariencia (claro/oscuro)
         aplicarColorPorTema()
 
         // 🧭 Botones principales
         fabMenu.setOnClickListener { createFolderDialog() }
         fabMore.setOnClickListener { showAdvancedMenu() }
-        binding.btnBack.setOnClickListener { goBack() }
+
+        // ⬆️ Subir un nivel real (padre) con el botón back de la barra
+        binding.btnBack.setOnClickListener { goUpOneLevel() }
+
+        // 🧭 Tap en el path para subir al padre rápido
+        binding.currentPath.setOnClickListener { goUpOneLevel() }
 
         // 💾 Cambiar almacenamiento (interno / externo)
         binding.btnSwitchStorage.setOnClickListener {
-            if (currentPath == getSafeRootDirectory()) {
+            if (isExternalStorage(currentPath)) {
                 // Cambiar a almacenamiento interno
                 currentPath = requireContext().filesDir
+                pathHistory.clear()
                 loadFiles(currentPath)
                 binding.btnSwitchStorage.text = "Cambiar a Externo"
                 Toast.makeText(requireContext(), "Cambiado a almacenamiento interno", Toast.LENGTH_SHORT).show()
             } else {
-                // Cambiar a almacenamiento externo
-                currentPath = getSafeRootDirectory()
+                // Cambiar a almacenamiento externo (raíz real si hay permiso)
+                currentPath = getRootDirectory()
+                pathHistory.clear()
                 loadFiles(currentPath)
                 binding.btnSwitchStorage.text = "Cambiar a Interno"
                 Toast.makeText(requireContext(), "Cambiado a almacenamiento externo", Toast.LENGTH_SHORT).show()
@@ -113,23 +120,50 @@ class FileExplorerFragment : Fragment() {
             Toast.makeText(requireContext(), "Selección cancelada", Toast.LENGTH_SHORT).show()
         }
 
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) { goBack() }
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) { goUpOneLevel() }
 
         return binding.root
     }
 
     // =====================================================
-    // 🎨 Aplicar color dinámico (Guinda / Azul + modo oscuro)
+    // 📌 Detección de raíz externa según permisos
+    // =====================================================
+    private fun getRootDirectory(): File {
+        return try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                // Si el usuario concedió "All files access", usa la raíz real
+                if (Environment.isExternalStorageManager()) {
+                    File("/storage/emulated/0")
+                } else {
+                    // Sin ALL FILES: usa Downloads como alcance seguro
+                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                }
+            } else {
+                // Android 10 o menor: raíz clásica
+                @Suppress("DEPRECATION")
+                Environment.getExternalStorageDirectory()
+            }
+        } catch (e: Exception) {
+            // Fallback: interno de la app
+            requireContext().filesDir
+        }
+    }
+
+    private fun isExternalStorage(path: File): Boolean {
+        return path.absolutePath.startsWith("/storage") || path.absolutePath.startsWith("/sdcard")
+    }
+
+    // =====================================================
+    // 🎨 Aplicar color dinámico (Guinda / Azul + Claro/Oscuro)
     // =====================================================
     private fun aplicarColorPorTema() {
         val prefs = requireContext().getSharedPreferences("settings", AppCompatActivity.MODE_PRIVATE)
-        val theme = prefs.getString("theme", "guinda")
+        val theme = prefs.getString("color_tema", "guinda")
 
         val isDark = (resources.configuration.uiMode and
                 android.content.res.Configuration.UI_MODE_NIGHT_MASK) ==
                 android.content.res.Configuration.UI_MODE_NIGHT_YES
 
-        // 🎨 Color base según tema seleccionado
         val colorPrincipal = when {
             theme == "azul" && isDark -> R.color.azul_escom_oscuro
             theme == "azul" && !isDark -> R.color.azul_escom
@@ -137,7 +171,6 @@ class FileExplorerFragment : Fragment() {
             else -> R.color.guinda_ipn
         }
 
-        // 🕶️ Color de íconos (blanco en claro, gris en oscuro)
         val iconColor = if (isDark) android.R.color.darker_gray else android.R.color.white
 
         listOf(fabMenu, fabMore, fabCancelSelection).forEach {
@@ -145,7 +178,6 @@ class FileExplorerFragment : Fragment() {
             it.imageTintList = ContextCompat.getColorStateList(requireContext(), iconColor)
         }
 
-        // ⚙️ Botón de cambio de almacenamiento
         binding.btnSwitchStorage.backgroundTintList =
             ContextCompat.getColorStateList(requireContext(), colorPrincipal)
         binding.btnSwitchStorage.setTextColor(
@@ -154,7 +186,7 @@ class FileExplorerFragment : Fragment() {
     }
 
     // =====================================================
-    // 🎞️ Animaciones suaves (Material Motion)
+    // 🎞️ Animaciones suaves
     // =====================================================
     private fun showCancelButtonAnimated() {
         if (fabCancelSelection.visibility == View.VISIBLE) return
@@ -184,17 +216,6 @@ class FileExplorerFragment : Fragment() {
     // =====================================================
     // 📂 Cargar archivos
     // =====================================================
-    private fun getSafeRootDirectory(): File {
-        return try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
-                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-            else
-                Environment.getExternalStorageDirectory()
-        } catch (e: Exception) {
-            requireContext().filesDir
-        }
-    }
-
     private fun loadFiles(path: File) {
         try {
             val files = path.listFiles()?.map {
@@ -209,16 +230,32 @@ class FileExplorerFragment : Fragment() {
 
             pathText.text = path.absolutePath
             adapter.submitList(files)
-            if (this::currentPath.isInitialized && currentPath != path) pathHistory.push(currentPath)
+
+            if (this::currentPath.isInitialized && currentPath != path) {
+                pathHistory.push(currentPath)
+            }
             currentPath = path
 
-            // 🔄 Actualiza texto del botón según ubicación
-            val isExternal = currentPath == getSafeRootDirectory()
-            binding.btnSwitchStorage.text =
-                if (isExternal) "Cambiar a Interno" else "Cambiar a Externo"
+            val isExternal = isExternalStorage(currentPath)
+            binding.btnSwitchStorage.text = if (isExternal) "Cambiar a Interno" else "Cambiar a Externo"
 
         } catch (e: Exception) {
             Toast.makeText(requireContext(), "Error al listar archivos", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    // =====================================================
+    // ⬆️ Subir un nivel real (padre) o usar historial
+    // =====================================================
+    private fun goUpOneLevel() {
+        val parent = currentPath.parentFile
+        if (parent != null && parent.exists() && parent.canRead()) {
+            loadFiles(parent)
+        } else if (pathHistory.isNotEmpty()) {
+            // Fallback al historial (por si entraste navegando hacia adelante)
+            loadFiles(pathHistory.pop())
+        } else {
+            Toast.makeText(requireContext(), "Ya estás en la raíz", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -313,13 +350,11 @@ class FileExplorerFragment : Fragment() {
                     intent.putExtra("imagePath", file.path)
                     startActivity(intent)
                 }
-
                 mime == "application/pdf" -> {
                     val intent = Intent(context, PdfViewerActivity::class.java)
                     intent.putExtra("pdfPath", file.path)
                     startActivity(intent)
                 }
-
                 else -> {
                     val uri = FileProvider.getUriForFile(
                         context,
@@ -417,14 +452,6 @@ class FileExplorerFragment : Fragment() {
             }
             .setNegativeButton("No", null)
             .show()
-    }
-
-    private fun goBack() {
-        if (pathHistory.isNotEmpty()) {
-            loadFiles(pathHistory.pop())
-        } else {
-            Toast.makeText(requireContext(), "Ya estás en la raíz", Toast.LENGTH_SHORT).show()
-        }
     }
 
     override fun onDestroyView() {

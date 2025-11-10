@@ -1,15 +1,23 @@
 <resources>
-    <!-- Colores para modo oscuro -->
+    <!-- Superficies y texto (noche) -->
+    <color name="colorSurface">#121212</color>
+    <color name="colorOnSurface">#FFFFFF</color>
 
-    <!-- Fondo y superficie -->
-    <color name="colorSurface">#121212</color> <!-- fondo general -->
-    <color name="colorOnSurface">#FFFFFF</color> <!-- texto sobre fondo -->
-
-    <!-- Colores principales en oscuro -->
+    <!-- Primary en noche -->
     <color name="guinda_ipn">#4A0028</color>
     <color name="azul_escom">#0D47A1</color>
 
     <!-- Texto sobre primary/secondary -->
     <color name="colorOnPrimary">#FFFFFF</color>
     <color name="colorOnSecondary">#FFFFFF</color>
+
+    <!-- También puedes mantener estas si las usas en runtime -->
+    <color name="guinda_ipn_oscuro">#4A0028</color>
+    <color name="azul_escom_oscuro">#0D47A1</color>
+
+    <!-- Utilitarios -->
+    <color name="white">#FFFFFF</color>
+
+    <!-- Requerido por FileAdapter (mismo nombre para que exista en night) -->
+    <color name="purple_200">#BB86FC</color>
 </resources>

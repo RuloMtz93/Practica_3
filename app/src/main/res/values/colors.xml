@@ -3,43 +3,31 @@
     <color name="teal_700">#00796B</color>
     <color name="teal_200">#80CBC4</color>
 
-    <!-- Azul ESCOM -->
-    <color name="azul_primary">#003366</color>
-    <color name="azul_secondary">#0055AA</color>
-
-    <color name="guinda">#800020</color>
-    <color name="guinda_oscuro">#5a0016</color>
-    <color name="azul">#003366</color>
-    <color name="azul_oscuro">#001a33</color>
-
     <!-- Guinda IPN -->
-    <color name="guinda_primary">#8A1538</color>
+    <color name="guinda_ipn">#6B2E5F</color>
     <color name="guinda_secondary">#B61E4E</color>
 
-    <color name="guinda_ipn">#6B2E5F</color>
+    <!-- Azul ESCOM -->
     <color name="azul_escom">#003D6D</color>
+    <color name="azul_secondary">#0055AA</color>
 
-    <!-- Fondo -->
-    <color name="background_light">#FFFFFF</color>
-    <color name="background_dark">#121212</color>
-
-    <!-- Colores universales -->
-    <color name="black">#000000</color>
-    <color name="white">#FFFFFF</color>
-
-    <color name="purple_200">#BB86FC</color>
-    <color name="gray_600">#757575</color>
-
-
-    <!-- Colores oscuros nuevos -->
-    <color name="azul_escom_oscuro">#0D47A1</color>
+    <!-- Variantes para FAB/contrastes -->
     <color name="guinda_ipn_oscuro">#4A0028</color>
-    <color name="gray_800">#2E2E2E</color>
+    <color name="azul_escom_oscuro">#0D47A1</color>
 
+    <!-- Superficies y texto (día) -->
     <color name="colorSurface">#FFFFFF</color>
     <color name="colorOnSurface">#000000</color>
 
+    <!-- Texto sobre primary/secondary -->
     <color name="colorOnPrimary">#FFFFFF</color>
     <color name="colorOnSecondary">#FFFFFF</color>
 
+    <!-- Utilitarios -->
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="gray_800">#2E2E2E</color>
+
+    <!-- Requerido por FileAdapter -->
+    <color name="purple_200">#BB86FC</color>
 </resources>
